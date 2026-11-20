@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Snow Route Notification System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        h2 { margin-bottom: 5px; }
+        p { color: #555; }
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background: #1a4d8f;
+            color: white;
+        }
+        button:hover { background: #143a6b; }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f2f2f2;
+            border-radius: 6px;
+            min-height: 40px;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Snow Route Notification System</h2>
+    <p>
+        Checks addresses from a CSV / Excel file and sends an email
+        notification via SendGrid only to residents affected by the street ban.
+    </p>
+
+    <button id="sendBtn">Send Emails</button>
+    <div id="result">Click the button to check addresses.</div>
+
+    <p class="note">
+        How it works: Frontend button → FastAPI backend → Address-matching + conditional check → SendGrid email → JSON result displayed here.
+    </p>
+
+<script>
+document.getElementById("sendBtn").addEventListener("click", async () => {
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerText = "Checking addresses...";
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/trigger-action", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        resultDiv.innerText = data.status +
+            (data.count ? " (" + data.count + " emails)" : "");
+    } catch (error) {
+        resultDiv.innerText = "Error contacting server";
+        console.error(error);
+    }
+});
+</script>
+
+</body>
+</html>
